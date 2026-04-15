@@ -8,6 +8,7 @@ public class SudokuGenerator {
     public static void main(String[] args) {
         System.out.println("Welcome to sudoku. Generating board.....");
         int[][] board = generateBoard();
+        printBoard(board);
         System.out.print("Board generated.\nPlease select a number (recommended 30-50) of cells to be removed, where more removals correlates with increased difficulty (recommended to start with 30)");
         int n = input.nextInt();
         removeNums(board, n);
