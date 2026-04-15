@@ -13,4 +13,4 @@ README.md             |  Brief description
 
 SudokuGenerator.java  |  Only Java class
 
-                      |
+Sudoku Video          | Video ([https://youtu.be/hYQWP60y9wg](url))
