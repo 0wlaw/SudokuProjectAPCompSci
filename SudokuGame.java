@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class SudokuGenerator {
+public class SudokuGame {
     public static final int DIM = 9;
     public static Scanner input = new Scanner(System.in);
 
@@ -16,21 +16,23 @@ public class SudokuGenerator {
         while (!isFull(board)) {
             printBoard(board);
             
-            int r =-1;
-            int c =-1;
-            int num = -1;
+            int r = -1, c = -1, num = -1;
             boolean evil = false;
-            while (!(r>=0&&r<9&&c>=0&&c<9&&(num>0&&num<10)||evil)){
+            while (!(r>=0 && r<9 && c>=0 && c<9 && num>0 && num<10) || evil) {
                 evil = false;
-                System.out.print("Row (1-9): ");
-                r = input.nextInt() - 1;
-                System.out.print("Column (1-9): ");
-                c = input.nextInt() - 1;
-                System.out.print("Enter cell value (1-9): ");
-                num = input.nextInt();
-                if (locked[r][c]) {
-                    evil = true;
-                    System.out.println("You can't change existing values");
+                try {
+                    System.out.print("Row (1-9): "); 
+                    r = input.nextInt() - 1;
+                    System.out.print("Column (1-9): "); 
+                    c = input.nextInt() - 1;
+                    System.out.print("Enter cell value (1-9): "); 
+                    num = input.nextInt();
+                    
+                    if (!(r>=0 && r<9 && c>=0 && c<9 && num>0 && num<10)) System.out.println("Invalid input");
+                    else if (locked[r][c]) { evil = true; System.out.println("You can't change existing values"); }
+                } catch (java.util.InputMismatchException e) {
+                    System.out.println("Invalid input"); input.nextLine(); 
+                    r = -1;
                 }
             }
                         
@@ -56,19 +58,6 @@ public class SudokuGenerator {
         
         input.close();
     }     
-
-    public static void testSpeed() {
-        long start = System.currentTimeMillis();
-        long num = 100000;
-        for (int i=0; i<num; i++) {
-            generateBoard();
-        }
-        long end = System.currentTimeMillis();
-        double diff = (double) (end - start);
-        double avgTime = (diff)/num;
-        System.out.println("With a sample size of " + num+ ", the average time to generate a board was "+ (avgTime) + " milliseconds");
-
-    }
 
     public static int[][] generateBoard() {
         ArrayList<Integer>[][] map = new ArrayList[DIM][DIM];
@@ -112,6 +101,82 @@ public class SudokuGenerator {
         }
         arr[mini][minj] = 0;
         return false;
+    }
+
+    public static void printBoard(int[][] arr) {
+        System.out.print("  -------+-------+-------\n | ");
+        for (int i = 0; i<DIM; i++) {
+            for (int j = 0; j<DIM; j++) {
+                System.out.print(((arr[i][j]==0) ?  "_" : arr[i][j]) + " ");
+                if (j%3==2) {
+                    System.out.print("| ");
+                    if (j==8) {
+                        if (i%3==2) {System.out.print("\n  -------+-------+-------");}
+                        if (i!=8) {System.out.print("\n | ");} else {System.out.println("\n\n");}
+                    }
+                }
+            }
+        }
+    }
+
+    private static boolean isValidCell(int num, int r, int c, int[][] arr) {
+        int rb = r/3*3;
+        int cb = c/3*3;
+        for (int i = 0; i<3; i++) {
+            for (int j = 0; j<3; j++) {
+                if (arr[rb+i][cb+j]==num) return false;
+            }
+        }
+        for (int i = 0; i<DIM; i++) {
+            if (arr[i][c] == num || arr[r][i] == num) return false;
+        }
+        return true;
+    }
+
+    private static boolean isFull(int[][] arr) {
+        for (int[] r : arr) {
+            for (int e : r) {
+                if (e == 0) return false;
+            }
+        }
+        return true;
+    }
+
+    public static void removeNums(int[][] board, int n) {
+        for (int done = 0; done < n;) {
+            int a = (int) (Math.random() * DIM);
+            int b = (int) (Math.random() * DIM);
+            if (board[a][b]!=0) {
+                board[a][b] = 0;
+                done++;
+            }
+        }
+    }
+
+    public static boolean[][] lockMask(int[][] board) {
+        boolean[][] done = new boolean[DIM][DIM];
+        
+        for (int i = 0; i < DIM; i++) {
+            for (int j = 0; j < DIM; j++) {
+                if (board[i][j] != 0) {
+                    done[i][j] = true;
+                }
+            }
+        }
+        return done;
+    }
+
+    public static void testSpeed() {
+        long start = System.currentTimeMillis();
+        long num = 100000;
+        for (int i=0; i<num; i++) {
+            generateBoard();
+        }
+        long end = System.currentTimeMillis();
+        double diff = (double) (end - start);
+        double avgTime = (diff)/num;
+        System.out.println("With a sample size of " + num+ ", the average time to generate a board was "+ (avgTime) + " milliseconds");
+
     }
 
     public static int[][] solveBoard(int[][] board) {
@@ -158,68 +223,4 @@ public class SudokuGenerator {
         arr[mini][minj] = 0;
         return false;
     }
-
-    public static void printBoard(int[][] arr) {
-        System.out.print("  -------+-------+-------\n | ");
-        for (int i = 0; i<DIM; i++) {
-            for (int j = 0; j<DIM; j++) {
-                System.out.print(arr[i][j] + " ");
-                if (j%3==2) {
-                    System.out.print("| ");
-                    if (j==8) {
-                        if (i%3==2) {System.out.print("\n  -------+-------+-------");}
-                        if (i!=8) {System.out.print("\n | ");} else {System.out.println("\n\n");}
-                    }
-                }
-            }
-        }
-    }
-
-    private static boolean isValidCell(int num, int r, int c, int[][] arr) {
-        int rb = r/3*3;
-        int cb = c/3*3;
-        for (int i = 0; i<3; i++) {
-            for (int j = 0; j<3; j++) {
-                if (arr[rb+i][cb+j]==num) return false;
-            }
-        }
-        for (int i = 0; i<DIM; i++) {
-            if (arr[i][c] == num || arr[r][i] == num) return false;
-        }
-        return true;
-    }
-
-    private static boolean isFull(int[][] arr) {
-        for (int[] r : arr) {
-            for (int e : r) {
-                if (e == 0) return false;
-            }
-        }
-        return true;
-    }
-
-    public static void removeNums(int[][] board, int n) {
-        for (int done = 0; done < n;) {
-            int a = (int) (Math.random() * DIM);
-            int b = (int) (Math.random() * DIM);
-            if (board[a][b]!=0) {
-                board[a][b] = 0;
-                done++;
-            }
-        }
-    }
-    public static boolean[][] lockMask(int[][] board) {
-        boolean[][] done = new boolean[DIM][DIM];
-        
-        for (int i = 0; i < DIM; i++) {
-            for (int j = 0; j < DIM; j++) {
-                if (board[i][j] != 0) {
-                    done[i][j] = true;
-                }
-            }
-        }
-        return done;
-    }
-
-
 }
