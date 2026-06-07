@@ -16,3 +16,5 @@ SudokuGenerator.java  |  Only Java class
 Sudoku Video          | Video ([https://youtu.be/hYQWP60y9wg](url))
 
 Code + Versions Doc   | Link: [https://docs.google.com/document/d/18tbefJ6FFqy5Cn38VVgDGUaGFd7tQi62qMszMNB4s_4/edit?usp=sharing](url)
+
+Play the game here    | [![Codespace Link](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=YOUR_REPO_ID)
