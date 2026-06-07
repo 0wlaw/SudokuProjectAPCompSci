@@ -14,21 +14,21 @@ public class SudokuGame {
         removeNums(board, n);
         boolean[][] locked = lockMask(board);        
         while (!isFull(board)) {
-            printBoard(board);
+            printBoard(board, locked);
             
             int r = -1, c = -1, num = -1;
             boolean evil = false;
-            while (!(r>=0 && r<9 && c>=0 && c<9 && num>0 && num<10) || evil) {
+            while (!(r>=0 && r<9 && c>=0 && c<9 && num>=0 && num<=9) || evil) {
                 evil = false;
                 try {
                     System.out.print("Row (1-9): "); 
                     r = input.nextInt() - 1;
                     System.out.print("Column (1-9): "); 
                     c = input.nextInt() - 1;
-                    System.out.print("Enter cell value (1-9): "); 
+                    System.out.print("Enter cell value (1-9, or 0 to undo a square): "); 
                     num = input.nextInt();
                     
-                    if (!(r>=0 && r<9 && c>=0 && c<9 && num>0 && num<10)) System.out.println("Invalid input");
+                    if (!(r>=0 && r<9 && c>=0 && c<9 && num>=0 && num<10)) System.out.println("Invalid input");
                     else if (locked[r][c]) { evil = true; System.out.println("You can't change existing values"); }
                 } catch (java.util.InputMismatchException e) {
                     System.out.println("Invalid input"); input.nextLine(); 
@@ -39,7 +39,7 @@ public class SudokuGame {
             int prev = board[r][c];
             board[r][c] = 0;
             
-            if (!isValidCell(num, r, c, board)) {
+            if (num!=0&&!isValidCell(num, r, c, board)) {
                 System.out.println("\nruh roh.... invalid move\ntry again\n");
                 board[r][c] = prev;
                 continue;
@@ -109,6 +109,27 @@ public class SudokuGame {
             for (int j = 0; j<DIM; j++) {
                 System.out.print(((arr[i][j]==0) ?  "_" : arr[i][j]) + " ");
                 if (j%3==2) {
+                    System.out.print("| ");
+                    if (j==8) {
+                        if (i%3==2) {System.out.print("\n  -------+-------+-------");}
+                        if (i!=8) {System.out.print("\n | ");} else {System.out.println("\n\n");}
+                    }
+                }
+            }
+        }
+    }
+
+    public static void printBoard(int[][] arr, boolean[][] key) {
+        System.out.print("  -------+-------+-------\n | ");
+        for (int i = 0; i<DIM; i++) {
+            for (int j = 0; j<DIM; j++) {
+                if (key[i][j]) {
+                    System.out.print("\u001B[1m");
+                }
+                System.out.print(((arr[i][j]==0) ?  "_" : arr[i][j]) + " ");
+                if (key[i][j]) {
+                    System.out.print("\u001B[0m");
+                }                if (j%3==2) {
                     System.out.print("| ");
                     if (j==8) {
                         if (i%3==2) {System.out.print("\n  -------+-------+-------");}
